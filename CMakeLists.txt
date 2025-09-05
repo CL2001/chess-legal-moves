@@ -13,5 +13,5 @@ include_directories(include)
 # Add the executable
 add_executable(cmake_init
     src/main.cpp
-    src/utils.cpp
+    src/legal_moves.cpp
 )

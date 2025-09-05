@@ -19,3 +19,17 @@ run: build
 
 clean:
 	@rm -rf $(BUILD_DIR)
+
+
+
+# Create virtual environment and install dependencies
+env:
+	@echo "Setting up Poetry environment..."
+	poetry install
+	poetry env activate
+
+
+
+# Run the project
+python:
+	poetry run python test_python.py

@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "chess-legal-moves"
+version = "0.1.0"
+description = ""
+authors = ["Christophe <christophe.lanouette@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12"
+python-chess = "^1.999"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
