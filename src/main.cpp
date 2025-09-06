@@ -36,21 +36,24 @@ int main()
 
 
     // Change this
+    /*
     ChessGame game{
         .player_turn = Color::Black,
         .board = {
-            'R', 'N', ' ', ' ', 'K', 'B', 'N', 'R',
-            'P', 'P', 'P', 'B', ' ', 'P', 'P', 'P',
-            ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-            ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-            ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-            ' ', ' ', 'P', ' ', ' ', 'p', ' ', ' ',
-            'p', 'p', 'p', ' ', 'p', ' ', 'p', 'p',
-            'r', ' ', 'b', 'k', 'Q', 'b', 'n', 'r'
+            Piece{Color::White, PieceType::Rook}, Piece{Color::White, PieceType::Knight}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::King}, Piece{Color::White, PieceType::Bishop}, Piece{Color::White, PieceType::Knight}, Piece{Color::White, PieceType::Rook},
+            Piece{Color::White, PieceType::Pawn}, Piece{Color::White, PieceType::Pawn}, Piece{Color::White, PieceType::Pawn}, Piece{Color::White, PieceType::Bishop}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::Pawn}, Piece{Color::White, PieceType::Pawn}, Piece{Color::White, PieceType::Pawn},
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Black, PieceType::Pawn}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Black, PieceType::Pawn},
+            Piece{Color::Black, PieceType::Rook}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Bishop}, Piece{Color::Black, PieceType::King}, Piece{Color::White, PieceType::Queen}, Piece{Color::Black, PieceType::Bishop}, Piece{Color::Black, PieceType::Knight}, Piece{Color::Black, PieceType::Rook}
         },
         .castle = {'K', 'Q'},
         .enPassant = -1
     };
+    */
+   ChessGame game;
 
 
 
@@ -61,12 +64,15 @@ int main()
     {
         std::cout << "From " << move.from_square << " to " << move.to_square << std::endl;
     }
+    std::cout << "After 1 iteration there is " << moves.size() << " moves possible" << std::endl;
 
+    /*
     // Iteration 4
     std::vector<int> totals = legalMoves4(game);
     std::cout << "After 1 iteration there is " << totals[0] << " moves possible" << std::endl;
     std::cout << "After 2 iteration there is " << totals[1] << " moves possible" << std::endl;
     std::cout << "After 3 iteration there is " << totals[2] << " moves possible" << std::endl;
     std::cout << "After 4 iteration there is " << totals[3] << " moves possible" << std::endl;
+    */
     return 0;
 }
