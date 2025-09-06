@@ -1,15 +1,32 @@
 #include <iostream>
 #include "legal_moves.hpp"
 
-std::vector<Move> legalMoves(std::vector<Move> previous_moves)
+std::vector<int> legalMoves4(ChessGame game1)
 {
-    std::vector<Move> next_moves;
-    for (auto move : previous_moves)
+    std::vector<int> totals = {0, 0, 0, 0};
+    std::vector<Move> moves1 = LegalMoves::generateLegalMoves(game1);
+    totals[0] = moves1.size();
+    for (auto move1 : moves1)
     {
-        std::vector<Move> res = LegalMoves::generateLegalMoves(move.chess_game);
-        next_moves.insert(next_moves.end(), res.begin(), res.end());
+        ChessGame game2 = LegalMoves::updateGame(game1, move1);
+        std::vector<Move> moves2 = LegalMoves::generateLegalMoves(game2);
+        totals[1] += moves2.size();
+
+        for (auto move2 : moves2)
+        {
+            ChessGame game3 = LegalMoves::updateGame(game2, move2);
+            std::vector<Move> moves3 = LegalMoves::generateLegalMoves(game3);
+            totals[2] += moves3.size();
+
+            for (auto move3 : moves3)
+            {
+                ChessGame game4 = LegalMoves::updateGame(game3, move3);
+                std::vector<Move> moves4 = LegalMoves::generateLegalMoves(game4);
+                totals[3] += moves4.size();        
+            }             
+        }   
     }
-    return next_moves;
+    return totals;
 }
 
 
@@ -35,7 +52,7 @@ int main()
         .enPassant = -1
     };
 
-    
+
 
     // Iteration 1
     std::vector<Move> moves = LegalMoves::generateLegalMoves(game);
@@ -44,18 +61,12 @@ int main()
     {
         std::cout << "From " << move.from_square << " to " << move.to_square << std::endl;
     }
-    std::cout << "After 1 iteration there is " << moves.size() << " moves possible" << std::endl;
-
-    // Iteration 2
-    std::vector<Move> moves_iter2 = legalMoves(moves);
-    std::cout << "After 2 iterations there is " << moves_iter2.size() << " moves possible" << std::endl;
-
-    // Iteration 3
-    std::vector<Move> moves_iter3 = legalMoves(moves_iter2);
-    std::cout << "After 3 iterations there is " << moves_iter3.size() << " moves possible" << std::endl;
 
     // Iteration 4
-    std::vector<Move> moves_iter4 = legalMoves(moves_iter3);
-    std::cout << "After 4 iterations there is " << moves_iter4.size() << " moves possible" << std::endl;
+    std::vector<int> totals = legalMoves4(game);
+    std::cout << "After 1 iteration there is " << totals[0] << " moves possible" << std::endl;
+    std::cout << "After 2 iteration there is " << totals[1] << " moves possible" << std::endl;
+    std::cout << "After 3 iteration there is " << totals[2] << " moves possible" << std::endl;
+    std::cout << "After 4 iteration there is " << totals[3] << " moves possible" << std::endl;
     return 0;
 }

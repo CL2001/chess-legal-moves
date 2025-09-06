@@ -1,7 +1,7 @@
 .PHONY: all build clean run
 
 # The name of the final executable (must match CMakeLists.txt)
-EXECUTABLE = cmake_init
+EXECUTABLE = chess_legal_moves
 
 # The build directory
 BUILD_DIR = build

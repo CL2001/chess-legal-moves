@@ -1,11 +1,13 @@
 // legal_moves.hpp
 #pragma once
 #include <vector>
+#include <iostream>
 
 
 enum class Color {
     White,
-    Black
+    Black,
+    Nil
 };
 
 struct ChessGame
@@ -30,7 +32,6 @@ struct Move
 {
     int from_square;
     int to_square;
-    ChessGame chess_game;
 };
 
 
@@ -38,4 +39,5 @@ struct Move
 namespace LegalMoves
 {
 std::vector<Move> generateLegalMoves(ChessGame);
+ChessGame updateGame(ChessGame, Move);
 }
