@@ -29,6 +29,9 @@ struct Piece {
     bool operator==(const Piece& other) const {
         return color == other.color && piece_type == other.piece_type;
     }
+    bool operator!=(const Piece& other) const {
+        return color != other.color || piece_type != other.piece_type;
+    }
 };
 
 struct ChessGame
@@ -83,8 +86,9 @@ struct Move
     int from_square;
     int to_square;
     Piece promotion;
+    ChessGame chess_game;
 
-    Move(int from, int to, Piece promo = Piece())
+    Move(int from, int to, Piece promo = Piece(), ChessGame chess_game)
         : from_square(from), to_square(to), promotion(promo) {}
 };
 
@@ -93,5 +97,4 @@ struct Move
 namespace LegalMoves
 {
 std::vector<Move> generateLegalMoves(ChessGame);
-ChessGame updateGame(ChessGame, Move);
 }
