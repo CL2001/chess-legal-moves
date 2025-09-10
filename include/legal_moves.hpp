@@ -88,8 +88,8 @@ struct Move
     Piece promotion;
     ChessGame chess_game;
 
-    Move(int from, int to, Piece promo = Piece(), ChessGame chess_game)
-        : from_square(from), to_square(to), promotion(promo) {}
+    Move(int from, int to, Piece promo = Piece(), ChessGame cg = ChessGame())
+        : from_square(from), to_square(to), promotion(promo), chess_game(cg) {}
 };
 
 

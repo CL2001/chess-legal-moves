@@ -73,7 +73,8 @@ def fen_to_chessgame(fen: str) -> str:
 
 
 if __name__ == "__main__":
-    fen = "r1bkQbnr/ppp1p1pp/2P2p2/8/8/8/PPPB1PPP/RN2KBNR b KQ - 3 6"
+    fen = "r1b1kbnr/ppp1p1pp/2P2p2/8/8/8/PPPB1PPP/RN2KBNR w KQ - 0 7"
+    #fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     print(fen_to_chessgame(fen))
     board = chess.Board(fen)
     print("[legal moves, legal moves depth 2, ....]")
