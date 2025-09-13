@@ -48,11 +48,11 @@ def fen_to_chessgame(fen: str) -> str:
         board_pieces.append(piece_to_cpp(piece))
 
     # Castling rights
-    castle = []
-    if board.has_kingside_castling_rights(chess.WHITE): castle.append("'K'")
-    if board.has_queenside_castling_rights(chess.WHITE): castle.append("'Q'")
-    if board.has_kingside_castling_rights(chess.BLACK): castle.append("'k'")
-    if board.has_queenside_castling_rights(chess.BLACK): castle.append("'q'")
+    castle = ["' '", "' '", "' '", "' '"]
+    if board.has_kingside_castling_rights(chess.WHITE): castle[0] = "'K'"
+    if board.has_queenside_castling_rights(chess.WHITE): castle[1] = "'Q'"
+    if board.has_kingside_castling_rights(chess.BLACK): castle[2] = "'k'"
+    if board.has_queenside_castling_rights(chess.BLACK): castle[3] = "'q'"
 
     # En passant target
     en_passant = board.ep_square if board.ep_square is not None else -1
@@ -73,7 +73,8 @@ def fen_to_chessgame(fen: str) -> str:
 
 
 if __name__ == "__main__":
-    fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    fen = "4R1k1/1p4pp/p5R1/3P1b2/3r1p2/5P2/PPP4P/7K b - - 0 30"
+    #fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     print(fen_to_chessgame(fen))
     board = chess.Board(fen)
     print("[legal moves, legal moves depth 2, ....]")
