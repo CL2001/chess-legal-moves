@@ -1,31 +1,22 @@
 #include <iostream>
+#include <functional>
 #include "legal_moves.hpp"
 
-std::vector<int> legalMoves4(ChessGame game1)
-{
-    std::vector<int> totals = {0, 0, 0, 0};
-    std::vector<Move> moves1 = LegalMoves::generateLegalMoves(game1);
-    totals[0] = moves1.size();
-    for (auto move1 : moves1)
-    {
-        ChessGame game2 = move1.chess_game;
-        std::vector<Move> moves2 = LegalMoves::generateLegalMoves(game2);
-        totals[1] += moves2.size();
+std::vector<int> legalMovesN(const ChessGame& game, int depth) {
+    std::vector<int> totals(depth, 0);
 
-        for (auto move2 : moves2)
-        {
-            ChessGame game3 = move2.chess_game;
-            std::vector<Move> moves3 = LegalMoves::generateLegalMoves(game3);
-            totals[2] += moves3.size();
+    std::function<void(const ChessGame&, int)> dfs = [&](const ChessGame& g, int d) {
+        if (d >= depth) return;
 
-            for (auto move3 : moves3)
-            {
-                ChessGame game4 = move3.chess_game;
-                std::vector<Move> moves4 = LegalMoves::generateLegalMoves(game4);
-                totals[3] += moves4.size();        
-            }             
-        }   
-    }
+        std::vector<Move> moves = LegalMoves::generateLegalMoves(g);
+        totals[d] += moves.size();
+
+        for (const auto& move : moves) {
+            dfs(move.chess_game, d + 1);
+        }
+    };
+
+    dfs(game, 0);
     return totals;
 }
 
@@ -40,17 +31,17 @@ int main()
     ChessGame game{
         .player_turn = Color::White,
         .board = {
-            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::Rook},
+            Piece{Color::White, PieceType::King}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
             Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
-            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Knight},
-            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::Pawn},
-            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::King}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Pawn},
-            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::Bishop}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
-            Piece{Color::Black, PieceType::Rook}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
-            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::King}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::White, PieceType::Pawn}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil},
+            Piece{Color::Black, PieceType::King}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Bishop}, Piece{Color::Nil, PieceType::Nil}, Piece{Color::Black, PieceType::Queen}, Piece{Color::Nil, PieceType::Nil}
         },
         .castle = {},
-        .enPassant = -1
+        .en_passant = -1
     };
 
 
@@ -65,10 +56,11 @@ int main()
 
 
     // Iteration 4
-    std::vector<int> totals = legalMoves4(game);
-    std::cout << "After 1 iteration there is " << totals[0] << " moves possible" << std::endl;
-    std::cout << "After 2 iteration there is " << totals[1] << " moves possible" << std::endl;
-    std::cout << "After 3 iteration there is " << totals[2] << " moves possible" << std::endl;
-    std::cout << "After 4 iteration there is " << totals[3] << " moves possible" << std::endl;
+    int depth = 4;
+    std::vector<int> totals = legalMovesN(game, depth);
+
+    for (int i = 0; i < depth; i++) {
+        std::cout << "Depth " << i+1 << ": " << totals[i] << " moves\n";
+    }
     return 0;
 }

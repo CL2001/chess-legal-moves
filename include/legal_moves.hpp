@@ -77,7 +77,7 @@ struct ChessGame
         Piece(Color::Black, PieceType::Rook),
     };
     char castle[4]{'K', 'Q', 'k', 'q'};
-    int enPassant {-1};
+    int en_passant {-1};
 };
 
 
