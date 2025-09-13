@@ -25,13 +25,13 @@ std::vector<Move> whitePawnMoves(const Piece board[64], int index)
     }
 
     // Diagonal left
-    if (board[index + 7].color == Color::Black)
+    if ((index + 7) % 8 != 7 && board[index + 7].color == Color::Black)
     {
         moves.push_back(Move(index, index + 7));
     }
 
     // Diagonal right
-    if (board[index + 9].color == Color::Black)
+    if ((index + 9) % 8 != 0 && board[index + 9].color == Color::Black)
     {
         moves.push_back(Move(index, index + 9));
     }
@@ -73,14 +73,14 @@ std::vector<Move> blackPawnMoves(const Piece board[64], int index)
         moves.push_back(Move(index, index - 8));
     }
 
-    // Diagonal left
-    if (board[index - 7].color == Color::White)
+    // Diagonal right
+    if ((index - 7) % 8 != 0 && board[index - 7].color == Color::White)
     {
         moves.push_back(Move(index, index - 7));
     }
 
-    // Diagonal right
-    if (board[index - 9].color == Color::White)
+    // Diagonal left
+    if ((index - 9) % 8 != 7 && board[index - 9].color == Color::White)
     {
         moves.push_back(Move(index, index - 9));
     }
@@ -459,37 +459,50 @@ bool isInCheck(ChessGame chess_game, int square = -1)
         return false;
     }
 
-    // Look for black pawns
-    int black_pawn[2] = {square + 7, square + 9};
-    if (chess_game.player_turn == Color::White && 
-            (black_pawn[0] >= 0 && black_pawn[0] < 64 && 
-            chess_game.board[black_pawn[0]] == Piece(Color::Black, PieceType::Pawn)) ||
-            (black_pawn[1] >= 0 && black_pawn[1] < 64 && 
-            chess_game.board[black_pawn[1]] == Piece(Color::Black, PieceType::Pawn)))
+    // Look for black pawns attacking a white king
+    if (chess_game.player_turn == Color::White)
     {
-        return true;
+        if (square % 8 != 7 && square + 7 < 64 &&
+            chess_game.board[square + 7] == Piece(Color::Black, PieceType::Pawn))
+        {
+            return true;
+        }
+        if (square % 8 != 0 && square + 9 < 64 &&
+            chess_game.board[square + 9] == Piece(Color::Black, PieceType::Pawn))
+        {
+            return true;
+        }
     }
 
-    // Look for white pawns
-    int white_pawn[2] = {square - 9, square - 7};
-    if (chess_game.player_turn == Color::Black && 
-            (white_pawn[0] >= 0 && white_pawn[0] < 64 && 
-            chess_game.board[white_pawn[0]] == Piece(Color::White, PieceType::Pawn)) ||
-            (white_pawn[1] >= 0 && white_pawn[1] < 64 && 
-            chess_game.board[white_pawn[1]] == Piece(Color::White, PieceType::Pawn)))
+    // Look for white pawns attacking a black king
+    if (chess_game.player_turn == Color::Black)
     {
-        return true;
+        if (square % 8 != 0 && square - 9 >= 0 &&
+            chess_game.board[square - 9] == Piece(Color::White, PieceType::Pawn))
+        {
+            return true;
+        }
+        if (square % 8 != 7 && square - 7 >= 0 &&
+            chess_game.board[square - 7] == Piece(Color::White, PieceType::Pawn))
+        {
+            return true;
+        }
     }
 
     Color opponent_color = chess_game.player_turn == Color::White ? Color::Black : Color::White;
 
     // Knights
-    int knight_moves[8] = {square - 17, square - 10, square + 6, square + 15, // kight moves (not magic numbers)
-                            square - 15, square - 6, square + 10, square + 17};
-    for (int i = 0 ; i < 8 ; i++)
+    int knight_moves_left[4] = {square - 17, square - 10, square + 6, square + 15}; // kight moves (not magic numbers)
+    int knight_moves_right[4] = {square - 15, square - 6, square + 10, square + 17};
+    for (int i = 0; i < 4; i++)
     {
-        if (knight_moves[i] >= 0 && knight_moves[i] < 64 && 
-            chess_game.board[knight_moves[i]] == Piece(opponent_color, PieceType::Knight))
+        if (knight_moves_left[i] < 64 && knight_moves_left[i] >= 0 && square % 8 > knight_moves_left[i] % 8 && 
+            chess_game.board[knight_moves_left[i]] == Piece(opponent_color, PieceType::Knight))
+        {
+            return true;
+        }
+        if (knight_moves_right[i] < 64 && knight_moves_right[i] >= 0 && square % 8 < knight_moves_right[i] % 8 && 
+            chess_game.board[knight_moves_right[i]] == Piece(opponent_color, PieceType::Knight))
         {
             return true;
         }
@@ -628,11 +641,25 @@ bool isInCheck(ChessGame chess_game, int square = -1)
 
 
     // King
-    int king_moves[8] = {square - 9, square - 8, square - 7, square  - 1, // king moves (not magic numbers)
-                            square + 1, square + 7, square + 8, square + 9};
-    for (int i = 0 ; i < 8 ; i++)
+    int king_moves_left[3] = {square - 9, square - 1, square + 7}; // king moves (not magic numbers)
+    int king_moves_right[3] = {square - 7, square + 1, square + 9};
+    int king_moves[2] = {square - 8, square + 8};
+    for (int i = 0; i < 3; i++)
     {
-        if (king_moves[i] >= 0 && king_moves[i] < 64 && 
+        if (king_moves_left[i] < 64 && king_moves_left[i] >= 0 && square % 8 > king_moves_left[i] % 8 && 
+            chess_game.board[king_moves_left[i]] == Piece(opponent_color, PieceType::King))
+        {
+            return true;
+        }
+        if (king_moves_right[i] < 64 && king_moves_right[i] >= 0 && square % 8 < king_moves_right[i] % 8 && 
+            chess_game.board[king_moves_right[i]] == Piece(opponent_color, PieceType::King))
+        {
+            return true;
+        }
+    }
+    for (int i = 0; i < 2; i++)
+    {
+        if (king_moves[i] < 64 && king_moves[i] >= 0 && 
             chess_game.board[king_moves[i]] == Piece(opponent_color, PieceType::King))
         {
             return true;
@@ -652,7 +679,6 @@ std::vector<Move> enPassantMoves(ChessGame chess_game)
             Move move = Move(chess_game.enPassant - 7, chess_game.enPassant);
             move.chess_game = chess_game;
             move.chess_game.enPassant = -1;
-            move.chess_game.player_turn = Color::Black;
             move.chess_game.board[chess_game.enPassant] = Piece(Color::White, PieceType::Pawn);
             move.chess_game.board[chess_game.enPassant - 7] = Piece();
             move.chess_game.board[chess_game.enPassant - 8] = Piece();
@@ -663,7 +689,6 @@ std::vector<Move> enPassantMoves(ChessGame chess_game)
             Move move = Move(chess_game.enPassant - 9, chess_game.enPassant);
             move.chess_game = chess_game;
             move.chess_game.enPassant = -1;
-            move.chess_game.player_turn = Color::Black;
             move.chess_game.board[chess_game.enPassant] = Piece(Color::White, PieceType::Pawn);
             move.chess_game.board[chess_game.enPassant - 9] = Piece();
             move.chess_game.board[chess_game.enPassant - 8] = Piece();
@@ -677,7 +702,6 @@ std::vector<Move> enPassantMoves(ChessGame chess_game)
             Move move = Move(chess_game.enPassant + 7, chess_game.enPassant);
             move.chess_game = chess_game;
             move.chess_game.enPassant = -1;
-            move.chess_game.player_turn = Color::White;
             move.chess_game.board[chess_game.enPassant] = Piece(Color::Black, PieceType::Pawn);
             move.chess_game.board[chess_game.enPassant + 7] = Piece();
             move.chess_game.board[chess_game.enPassant + 8] = Piece();
@@ -688,7 +712,6 @@ std::vector<Move> enPassantMoves(ChessGame chess_game)
             Move move = Move(chess_game.enPassant + 9, chess_game.enPassant);
             move.chess_game = chess_game;
             move.chess_game.enPassant = -1;
-            move.chess_game.player_turn = Color::White;
             move.chess_game.board[chess_game.enPassant] = Piece(Color::Black, PieceType::Pawn);
             move.chess_game.board[chess_game.enPassant + 9] = Piece();
             move.chess_game.board[chess_game.enPassant + 8] = Piece();
@@ -713,7 +736,6 @@ std::vector<Move> castleMoves(ChessGame chess_game)
             move.chess_game.enPassant = -1;
             move.chess_game.castle[0] = ' ';
             move.chess_game.castle[1] = ' ';
-            move.chess_game.player_turn = Color::Black;
             move.chess_game.board[4] = Piece();
             move.chess_game.board[5] = Piece(Color::White, PieceType::Rook);
             move.chess_game.board[6] = Piece(Color::White, PieceType::King);
@@ -731,7 +753,6 @@ std::vector<Move> castleMoves(ChessGame chess_game)
             move.chess_game.enPassant = -1;
             move.chess_game.castle[0] = ' ';
             move.chess_game.castle[1] = ' ';
-            move.chess_game.player_turn = Color::Black;
             move.chess_game.board[0] = Piece();
             move.chess_game.board[1] = Piece();
             move.chess_game.board[2] = Piece(Color::White, PieceType::King);
@@ -750,7 +771,6 @@ std::vector<Move> castleMoves(ChessGame chess_game)
             move.chess_game.enPassant = -1;
             move.chess_game.castle[2] = ' ';
             move.chess_game.castle[3] = ' ';
-            move.chess_game.player_turn = Color::White;
             move.chess_game.board[60] = Piece();
             move.chess_game.board[61] = Piece(Color::Black, PieceType::Rook);
             move.chess_game.board[62] = Piece(Color::Black, PieceType::King);
@@ -768,7 +788,6 @@ std::vector<Move> castleMoves(ChessGame chess_game)
             move.chess_game.enPassant = -1;
             move.chess_game.castle[2] = ' ';
             move.chess_game.castle[3] = ' ';
-            move.chess_game.player_turn = Color::White;
             move.chess_game.board[56] = Piece();
             move.chess_game.board[57] = Piece();
             move.chess_game.board[58] = Piece(Color::Black, PieceType::King);
