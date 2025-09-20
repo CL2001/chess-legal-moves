@@ -67,13 +67,15 @@ def fen_to_chessgame(fen: str) -> str:
         out.append("        " + ", ".join(row) + ("," if r < 7 else ""))
     out.append("    },")
     out.append(f"    .castle = {{{', '.join(castle)}}},")
-    out.append(f"    .en_passant = {en_passant}")
+    out.append(f"    .en_passant = {en_passant},")
+    out.append(f"    .winner = Winner::Nil")
     out.append("};")
     return "\n".join(out)
 
 
 if __name__ == "__main__":
-    fen = "4R1k1/1p4pp/p5R1/3P1b2/3r1p2/5P2/PPP4P/7K b - - 0 30"
+    #fen = "k1K5/1R6/8/8/8/8/8/8 b - - 1 1"
+    fen = "k1b2n2/8/8/8/8/8/8/K1B2N2 w - - 0 1"
     #fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     print(fen_to_chessgame(fen))
     board = chess.Board(fen)
