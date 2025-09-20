@@ -14,4 +14,5 @@ include_directories(include)
 add_executable(chess_legal_moves
     src/main.cpp
     src/legal_moves.cpp
+    src/is_in_check.cpp
 )

@@ -97,4 +97,5 @@ struct Move
 namespace LegalMoves
 {
 std::vector<Move> generateLegalMoves(ChessGame);
+bool isInCheck(ChessGame, int = -1);
 }
