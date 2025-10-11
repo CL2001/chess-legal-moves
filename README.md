@@ -66,8 +66,3 @@ This executes the Python program which:
 - Make sure to use `make env` before `make python` to ensure the Python environment is properly configured.
 
 ---
-
-## Author
-
-Christophe Lanouette  
-Email: christophe.lanouette@gmail.com
