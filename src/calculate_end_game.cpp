@@ -1,10 +1,9 @@
 // calculate_end_game.cpp
-#include "game_end.hpp"
-#include "legal_moves.hpp"
+#include "chess.hpp"
 
-Winner GameEnd::calculateEndGame(ChessGame chess_game, std::vector<Move> legal_moves)
+Winner Chess::calculateEndGame(ChessGame chess_game, std::vector<Move> legal_moves)
 {
-    bool in_check = LegalMoves::isInCheck(chess_game);
+    bool in_check = Chess::isInCheck(chess_game);
     if (legal_moves.size() <= 0 && in_check)
     {
         return (chess_game.player_turn == Color::White) ? Winner::Black : Winner::White;
@@ -13,8 +12,8 @@ Winner GameEnd::calculateEndGame(ChessGame chess_game, std::vector<Move> legal_m
     {
         return Winner::Draw;
     }
-    if (GameEnd::insufficientMaterials(chess_game, Color::White) && 
-        GameEnd::insufficientMaterials(chess_game, Color::Black))
+    if (Chess::insufficientMaterials(chess_game, Color::White) && 
+        Chess::insufficientMaterials(chess_game, Color::Black))
     {
         return Winner::Draw;
     }

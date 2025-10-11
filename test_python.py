@@ -75,7 +75,7 @@ def fen_to_chessgame(fen: str) -> str:
 
 if __name__ == "__main__":
     #fen = "k1K5/1R6/8/8/8/8/8/8 b - - 1 1"
-    fen = "k1b2n2/8/8/8/8/8/8/K1B2N2 w - - 0 1"
+    fen = "rnbqkbnr/ppppppp1/8/P6p/8/8/1PPPPPPP/RNBQKBNR b KQkq - 0 2"
     #fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     print(fen_to_chessgame(fen))
     board = chess.Board(fen)
