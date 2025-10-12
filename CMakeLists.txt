@@ -17,4 +17,5 @@ add_executable(chess_legal_moves
     src/is_in_check.cpp
     src/insufficient_materials.cpp
     src/calculate_end_game.cpp
+    src/bot_move.cpp
 )

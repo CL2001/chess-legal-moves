@@ -247,6 +247,8 @@ void mainLoop(Color player_color)
         else 
         {
             // Chessbot
+            Move move = Chess::botMove(game, moves, 'e');
+            game = move.chess_game;
         }
         print_board(game);
     }
@@ -256,7 +258,7 @@ void mainLoop(Color player_color)
 int main()
 {
     //mainTest();
-    Color player_color = Color::Nil; // Nil for pvp, color for bots
+    Color player_color = Color::White; // Nil for pvp, color for bots
     mainLoop(player_color);
     return 0;
 }
