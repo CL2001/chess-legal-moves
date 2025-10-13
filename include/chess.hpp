@@ -6,6 +6,7 @@
 #include <chrono>
 #include <map>
 #include <array>
+#include <limits.h>
 #include "structs.hpp"
 
 namespace Chess

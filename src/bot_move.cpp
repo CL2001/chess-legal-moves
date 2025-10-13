@@ -106,9 +106,65 @@ int static_eval(ChessGame chess_game)
 }
 
 
+int minimax(ChessGame chess_game, int depth=3, int alpha=INT_MIN, int beta=INT_MAX)
+{
+    if (depth == 0)
+    {
+        return static_eval(chess_game);
+    }
+    std::vector<Move> moves = Chess::generateLegalMoves(chess_game);
+    if (chess_game.player_turn == Color::White)
+    {
+        if (moves.empty()) {
+            return Chess::isInCheck(chess_game) ? INT_MAX : 0;
+        }
+        int max_eval = INT_MIN;
+        for (auto move: moves)
+        {
+            int eval = minimax(move.chess_game, depth - 1, alpha, beta);
+            max_eval = std::max(max_eval, eval);
+            alpha = std::max(alpha, eval);
+            if (beta <= alpha) {break;}
+        }
+        return max_eval;
+    }
+    else
+    {
+        if (moves.empty()) {
+            return Chess::isInCheck(chess_game) ? INT_MIN : 0;
+        }
+        int min_eval = INT_MAX;
+        for (auto move: moves)
+        {
+            int eval = minimax(move.chess_game, depth - 1, alpha, beta);
+            min_eval = std::min(min_eval, eval);
+            beta = std::min(beta, eval);
+            if (beta <= alpha) {break;}
+        }
+        return min_eval;
+    }
+}
+
 #include <iostream>
 Move Chess::botMove(ChessGame chess_game, std::vector<Move> moves)
 {
-    std::cout << "eval: " << static_eval(chess_game) << std::endl;
-    return moves[0];
+    Move best_move = moves[0];
+    int best_eval = minimax(moves[0].chess_game);
+    std::cout << "Move: " << moves[0].from_square << " " << moves[0].to_square << ", eval: " << best_eval << std::endl;
+    for (int i = 1; i < moves.size(); i++)
+    {
+        int eval = minimax(moves[i].chess_game);
+        if (chess_game.player_turn == Color::White && eval > best_eval)
+        {
+            best_eval = eval;
+            best_move = moves[i];
+        }
+        else if (chess_game.player_turn == Color::Black && eval < best_eval)
+        {
+            best_eval = eval;
+            best_move = moves[i];
+        }
+        std::cout << "Move: " << moves[i].from_square << " " << moves[i].to_square << ", eval: " << eval << std::endl;
+    }
+    return best_move;
 }
