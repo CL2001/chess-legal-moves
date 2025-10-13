@@ -247,7 +247,7 @@ void mainLoop(Color player_color)
         else 
         {
             // Chessbot
-            Move move = Chess::botMove(game, moves, 'e');
+            Move move = Chess::botMove(game, moves);
             game = move.chess_game;
         }
         print_board(game);
