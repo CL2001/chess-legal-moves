@@ -22,7 +22,7 @@ std::vector<int> legalMovesN(const ChessGame& game, int depth) {
 }
 
 
-void mainTest() 
+void mainTest(int depth = 4) 
 {
     std::cout << "Hello World from main" << std::endl;
 
@@ -83,7 +83,6 @@ void mainTest()
 
 
     // Iteration
-    int depth = 4;
     std::vector<int> totals = legalMovesN(game, depth);
 
     for (int i = 0; i < depth; i++) {
@@ -258,8 +257,15 @@ void mainLoop(Color player_color)
 
 int main()
 {
-    //mainTest();
-    Color player_color = Color::Black; // Nil for pvp, color for bots
-    mainLoop(player_color);
+    auto start = std::chrono::high_resolution_clock::now();
+
+    mainTest(5);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "mainTest() took " << duration.count() << " seconds\n";
+
+    //Color player_color = Color::Black; // Nil for pvp, color for bots
+    //mainLoop(player_color);
     return 0;
 }
