@@ -64,5 +64,7 @@ This executes the Python program which:
 - The Python project helps verify the correctness of the C++ legal move generator.
 - The `ChessGame` struct in C++ can be initialized directly from the Python output for testing and validation.
 - Make sure to use `make env` before `make python` to ensure the Python environment is properly configured.
+- The file containing lots of data `games.pgn` is not uploaded to git since the size is too large.
+  To get this file, please download it from the lichess game base.
 
 ---

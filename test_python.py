@@ -1,4 +1,7 @@
 import chess
+import chess.pgn
+import io
+import time
 
 def count_legal_moves(board, iterations=4):
     from copy import deepcopy
@@ -103,12 +106,196 @@ def fen_to_uint_64(fen: str) -> str:
     return f"0x{value:016x}ULL"
 
 
+def pgn_to_cpp_vector(pgn_string: str, include_initial=True) -> str:
+    pgn_io = io.StringIO(pgn_string)
+    game = chess.pgn.read_game(pgn_io)
+
+    board = game.board()
+
+    positions = []
+
+    # Include starting position if desired
+    if include_initial:
+        positions.append(fen_to_chessgame(board.fen()))
+
+    # Play moves one by one
+    for move in game.mainline_moves():
+        board.push(move)
+        positions.append(fen_to_chessgame(board.fen()))
+
+    # Build vector output
+    out = []
+    out.append("std::vector<ChessGame> game_positions = {")
+    for i, pos in enumerate(positions):
+        out.append("([]{")
+        out.append(pos)
+        out.append("return game;")
+        out.append("}())" + ("," if i < len(positions) - 1 else ""))
+    out.append("};")
+
+    return "\n".join(out)
+
+
+def pgn_to_fen_vector(pgn_string: str, include_initial=True) -> str:
+    pgn_io = io.StringIO(pgn_string)
+    game = chess.pgn.read_game(pgn_io)
+
+    board = game.board()
+    fens = []
+
+    # Include starting position if desired
+    if include_initial:
+        fens.append(board.fen())
+
+    # Play moves one by one
+    for move in game.mainline_moves():
+        board.push(move)
+        fens.append(board.fen())
+
+    # Build C++ vector<string>
+    out = []
+    out.append("std::vector<std::string> fen_positions = {")
+    for i, fen in enumerate(fens):
+        escaped = fen.replace("\\", "\\\\").replace('"', '\\"')
+        out.append(f'    "{escaped}"' + ("," if i < len(fens) - 1 else ""))
+    out.append("};")
+
+    return "\n".join(out)
+
+
+def pgn_to_check_vector(pgn_string: str, include_initial=True) -> str:
+    pgn_io = io.StringIO(pgn_string)
+    game = chess.pgn.read_game(pgn_io)
+
+    board = game.board()
+
+    checks = []
+
+    # Include starting position if desired
+    if include_initial:
+        checks.append(board.is_check())
+
+    # Play moves one by one
+    for move in game.mainline_moves():
+        board.push(move)
+        checks.append(board.is_check())
+
+    # Build C++ vector<bool>
+    out = []
+    out.append("std::vector<bool> position_is_check = {")
+    for i, val in enumerate(checks):
+        cpp_bool = "true" if val else "false"
+        out.append("    " + cpp_bool + ("," if i < len(checks) - 1 else ""))
+    out.append("};")
+
+    return "\n".join(out)
+
+
+def pgn_to_fen_check_pairs(pgn_string: str, include_initial=True) -> str:
+    pgn_io = io.StringIO(pgn_string)
+    game = chess.pgn.read_game(pgn_io)
+
+    board = game.board()
+    pairs = []
+
+    # Include starting position if desired
+    if include_initial:
+        pairs.append((board.fen(), board.is_check()))
+
+    # Play moves one by one
+    for move in game.mainline_moves():
+        board.push(move)
+        pairs.append((board.fen(), board.is_check()))
+
+    # Build C++ vector<pair<string,bool>>
+    out = []
+    out.append("std::vector<std::pair<std::string, bool>> fen_check_positions = {")
+    for i, (fen, is_check) in enumerate(pairs):
+        escaped = fen.replace("\\", "\\\\").replace('"', '\\"')
+        cpp_bool = "true" if is_check else "false"
+        out.append(f'    std::make_pair("{escaped}", {cpp_bool})' + ("," if i < len(pairs) - 1 else ""))
+    out.append("};")
+
+    return "\n".join(out)
+
+
+def pgn_to_all_fens(pgn_file_path: str, start_game: int = 1, end_game: int = None, delay: float = 0.0) -> list[str]:
+    """
+    Reads a PGN file and returns a list of FEN strings for every position of games in the range [start_game, end_game].
+
+    Args:
+        pgn_file_path (str): Path to the PGN file.
+        start_game (int): 1-based index of the first game to include.
+        end_game (int): 1-based index of the last game to include (inclusive). If None, goes to end of file.
+        delay (float): Optional delay in seconds between processing positions (useful for testing).
+
+    Returns:
+        List[str]: List of FEN strings for every position in the specified games.
+    """
+    all_fens = []
+    with open(pgn_file_path, "r", encoding="utf-8") as pgn:
+        game_number = 1
+        while True:
+            game = chess.pgn.read_game(pgn)
+            if game is None:
+                break  # No more games
+
+            if game_number >= start_game and (end_game is None or game_number <= end_game):
+                board = game.board()
+                # Include starting position
+                all_fens.append(board.fen())
+
+                # Push moves and record FEN after each move
+                for move in game.mainline_moves():
+                    board.push(move)
+                    all_fens.append(board.fen())
+
+                    if delay > 0:
+                        time.sleep(delay)
+
+            if end_game is not None and game_number >= end_game:
+                break
+
+            game_number += 1
+
+    return all_fens
+
+
+def fens_to_check_pairs(fens: list[str], only_checks: bool = False) -> str:
+    """
+    Converts a list of FENs into a C++ vector of pairs (FEN, is_check).
+
+    Args:
+        fens (list[str]): List of FEN strings.
+        only_checks (bool): If True, include only positions where the side to move is in check.
+
+    Returns:
+        str: C++ code for std::vector<std::pair<std::string,bool>>.
+    """
+    pairs = []
+
+    for fen in fens:
+        board = chess.Board(fen)
+        is_check = board.is_check()
+        if only_checks and not is_check:
+            continue
+        pairs.append((fen, is_check))
+
+    # Build C++ vector<pair<string,bool>>
+    out = []
+    out.append("std::vector<std::pair<std::string, bool>> fen_check_positions = {")
+    for i, (fen, is_check) in enumerate(pairs):
+        escaped = fen.replace("\\", "\\\\").replace('"', '\\"')
+        cpp_bool = "true" if is_check else "false"
+        out.append(f'    std::make_pair("{escaped}", {cpp_bool})' + ("," if i < len(pairs) - 1 else ""))
+    out.append("};")
+
+    return "\n".join(out)
+
 
 if __name__ == "__main__":
-    #fen = "k1K5/1R6/8/8/8/8/8/8 b - - 1 1"
-    #fen = "rnbqkbnr/ppppppp1/8/P6p/8/8/1PPPPPPP/RNBQKBNR b KQkq - 0 2"
-    fen = "r1bB1rk1/6bn/1n4p1/1p1PPp1p/pPp1P1P1/7P/P2QN1B1/R3K2R b KQ b3 0 20"
-    #fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    """
+    fen = "rnbq1bnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQ1BNR w KQkq - 0 1"
     print("fen_to_board_string")
     print(fen_to_board_string(fen))
     print("fen to uint64")
@@ -120,3 +307,17 @@ if __name__ == "__main__":
     #    print(move)
     #print("[legal moves, legal moves depth 2, ....]")
     #print(count_legal_moves(board, iterations=4))
+    """
+
+
+    fens_list = pgn_to_all_fens("games.pgn", start_game=1, end_game=500)
+
+
+    # Use the list of FENs we already generated
+    fen_check_output = fens_to_check_pairs(fens_list, only_checks=True)
+
+    with open("fen_check_positions.hpp", "w", encoding="utf-8") as f:
+        f.write(fen_check_output)  # write all positions
+        # f.write(fen_check_only_output)  # optional: write only checks
+
+    print("C++ header written to fen_check_positions.hpp")

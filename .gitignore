@@ -1,2 +1,5 @@
 build/
 .vscode
+fen_check_positions.hpp
+game_positions.hpp
+games.pgn
