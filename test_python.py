@@ -293,9 +293,39 @@ def fens_to_check_pairs(fens: list[str], only_checks: bool = False) -> str:
     return "\n".join(out)
 
 
-if __name__ == "__main__":
+def fens_to_legal_movecount_pairs(fens: list[str]) -> str:
     """
-    fen = "rnbq1bnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQ1BNR w KQkq - 0 1"
+    Converts a list of FENs into a C++ vector of pairs (FEN, legal_move_count).
+
+    Args:
+        fens (list[str]): List of FEN strings.
+
+    Returns:
+        str: C++ code for std::vector<std::pair<std::string, int>>.
+    """
+    pairs = []
+
+    for fen in fens:
+        board = chess.Board(fen)
+        move_count = board.legal_moves.count()
+        pairs.append((fen, move_count))
+
+    # Build C++ vector<pair<string,int>>
+    out = []
+    out.append("std::vector<std::pair<std::string, int>> fen_legal_move_counts = {")
+    for i, (fen, move_count) in enumerate(pairs):
+        escaped = fen.replace("\\", "\\\\").replace('"', '\\"')
+        out.append(
+            f'    std::make_pair("{escaped}", {move_count})'
+            + ("," if i < len(pairs) - 1 else "")
+        )
+    out.append("};")
+
+    return "\n".join(out)
+
+
+if __name__ == "__main__":
+    fen = "r1bqk2r/1pp3pn/p2p1p2/8/1PPbPQPp/P1NP3P/1B4B1/R3K2R b KQkq - 0 1"
     print("fen_to_board_string")
     print(fen_to_board_string(fen))
     print("fen to uint64")
@@ -308,16 +338,22 @@ if __name__ == "__main__":
     #print("[legal moves, legal moves depth 2, ....]")
     #print(count_legal_moves(board, iterations=4))
     """
+    fens_list = pgn_to_all_fens("games.pgn", start_game=551, end_game=600)
 
-
-    fens_list = pgn_to_all_fens("games.pgn", start_game=1, end_game=500)
 
 
     # Use the list of FENs we already generated
     fen_check_output = fens_to_check_pairs(fens_list, only_checks=True)
 
     with open("fen_check_positions.hpp", "w", encoding="utf-8") as f:
-        f.write(fen_check_output)  # write all positions
-        # f.write(fen_check_only_output)  # optional: write only checks
+        f.write(fen_check_output)
 
     print("C++ header written to fen_check_positions.hpp")
+
+    fen_movecount_output = fens_to_legal_movecount_pairs(fens_list)
+
+    with open("fen_check_positions.hpp", "w", encoding="utf-8") as f:
+        f.write(fen_movecount_output)
+
+    print("C++ header written to fen_check_positions.hpp")
+    """
